@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Zones: read-only from client, writes only from Cloud Functions (server-side admin SDK)
+    match /zones/{zoneId} {
+      allow read: if true;
+      allow write: if false; // Only Cloud Functions write zones
+    }
+    // Alerts: read-only from client
+    match /alerts/{alertId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    // Translations: read-only from client
+    match /translations/{translationId} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}

@@ -1,0 +1,385 @@
+/* VolunteerAI — Design System
+   Dark FIFA-themed UI. All animations are CSS-only. No JS layout repaints.
+   Accessibility: high contrast ratios, visible focus rings, semantic spacing.
+*/
+
+/* ── Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ── CSS Variables ── */
+:root {
+  --color-bg: #0d1117;
+  --color-surface: #161b22;
+  --color-surface-2: #21262d;
+  --color-border: #30363d;
+  --color-text: #e6edf3;
+  --color-text-muted: #8b949e;
+
+  --color-green: #3fb950;
+  --color-green-bg: rgba(63, 185, 80, 0.12);
+  --color-yellow: #d29922;
+  --color-yellow-bg: rgba(210, 153, 34, 0.12);
+  --color-red: #f85149;
+  --color-red-bg: rgba(248, 81, 73, 0.12);
+  --color-blue: #388bfd;
+
+  --radius: 10px;
+  --radius-lg: 16px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+
+  --font: 'Inter', system-ui, sans-serif;
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* ── Focus Ring (Accessibility) ── */
+:focus-visible {
+  outline: 2px solid var(--color-blue);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ────────────────────────────────────────── */
+/* Dashboard                                  */
+/* ────────────────────────────────────────── */
+.dashboard {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+  display: grid;
+  grid-template-areas:
+    "status"
+    "alert"
+    "zones"
+    "uploader";
+  gap: 24px;
+}
+
+.dashboard__status {
+  grid-area: status;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: 1px solid var(--color-border);
+}
+.dashboard__status--connecting { background: var(--color-surface); color: var(--color-text-muted); }
+.dashboard__status--disconnected { background: var(--color-yellow-bg); color: var(--color-yellow); border-color: var(--color-yellow); }
+.dashboard__status--error { background: var(--color-red-bg); color: var(--color-red); border-color: var(--color-red); }
+
+.dashboard__zones { grid-area: zones; }
+.dashboard__uploader { grid-area: uploader; }
+
+.dashboard__title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dashboard__live-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-green);
+  letter-spacing: 0.08em;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.dashboard__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.dashboard__empty {
+  color: var(--color-text-muted);
+  font-style: italic;
+  padding: 32px 0;
+}
+
+.dashboard__upload-error {
+  color: var(--color-red);
+  font-size: 0.9rem;
+  margin-top: 8px;
+}
+
+/* ────────────────────────────────────────── */
+/* Zone Card                                  */
+/* ────────────────────────────────────────── */
+.zone-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: default;
+}
+
+.zone-card:focus-visible,
+.zone-card[role="button"]:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.zone-card[role="button"] { cursor: pointer; }
+
+.zone-card--green { border-left: 4px solid var(--color-green); background: linear-gradient(135deg, var(--color-surface), var(--color-green-bg)); }
+.zone-card--yellow { border-left: 4px solid var(--color-yellow); background: linear-gradient(135deg, var(--color-surface), var(--color-yellow-bg)); }
+.zone-card--red { border-left: 4px solid var(--color-red); background: linear-gradient(135deg, var(--color-surface), var(--color-red-bg)); animation: redPulse 2s infinite; }
+
+@keyframes redPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(248,81,73,0); }
+  50% { box-shadow: 0 0 0 6px rgba(248,81,73,0.15); }
+}
+
+.zone-card__name { font-weight: 700; font-size: 1rem; }
+.zone-card__occupancy { font-size: 2rem; font-weight: 800; }
+.zone-card--green .zone-card__occupancy { color: var(--color-green); }
+.zone-card--yellow .zone-card__occupancy { color: var(--color-yellow); }
+.zone-card--red .zone-card__occupancy { color: var(--color-red); }
+
+.zone-card__bar {
+  height: 6px;
+  background: var(--color-border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.zone-card__bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: currentColor;
+  transition: width 0.5s ease;
+}
+
+.zone-card--green .zone-card__bar-fill { background: var(--color-green); }
+.zone-card--yellow .zone-card__bar-fill { background: var(--color-yellow); }
+.zone-card--red .zone-card__bar-fill { background: var(--color-red); }
+
+.zone-card__alert-badge {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-red);
+  letter-spacing: 0.04em;
+}
+
+/* ────────────────────────────────────────── */
+/* Alert Banner                               */
+/* ────────────────────────────────────────── */
+.alert-banner {
+  grid-area: alert;
+  background: var(--color-surface);
+  border: 1px solid var(--color-red);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: 0 0 40px rgba(248,81,73,0.15);
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.alert-banner__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.alert-banner__icon { font-size: 1.5rem; }
+
+.alert-banner__title {
+  flex: 1;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.alert-banner__resolve {
+  padding: 8px 16px;
+  background: var(--color-green);
+  color: #000;
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.alert-banner__resolve:hover { background: #2ea043; }
+
+.alert-banner__loading { color: var(--color-text-muted); font-style: italic; }
+
+.alert-banner__fallback-notice {
+  background: var(--color-yellow-bg);
+  border: 1px solid var(--color-yellow);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  color: var(--color-yellow);
+  font-size: 0.88rem;
+  margin-bottom: 12px;
+}
+
+.alert-banner__instruction {
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 14px;
+  background: var(--color-surface-2);
+  border-left: 4px solid var(--color-red);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  margin-bottom: 10px;
+}
+
+.alert-banner__reason {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  margin-bottom: 16px;
+}
+
+.alert-banner__footer { display: flex; flex-direction: column; gap: 14px; }
+
+.alert-banner__tone {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.alert-banner__tone-label { font-size: 0.9rem; font-weight: 600; }
+
+.alert-banner__tone-select {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.alert-banner__languages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.alert-banner__lang-btn {
+  padding: 8px 14px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.alert-banner__lang-btn:hover:not(:disabled) {
+  border-color: var(--color-blue);
+  background: rgba(56, 139, 253, 0.1);
+}
+
+.alert-banner__lang-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.alert-banner__translation {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+
+.alert-banner__translation--fallback { border-color: var(--color-yellow); }
+
+.alert-banner__translation-warning {
+  font-size: 0.82rem;
+  color: var(--color-yellow);
+  margin-bottom: 6px;
+}
+
+.alert-banner__translation-text { font-size: 1rem; font-weight: 500; }
+
+/* ────────────────────────────────────────── */
+/* CSV Uploader                               */
+/* ────────────────────────────────────────── */
+.csv-uploader {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+
+.csv-uploader__title { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+.csv-uploader__hint { font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 16px; }
+
+.csv-uploader__dropzone {
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius);
+  padding: 40px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.csv-uploader__dropzone:hover,
+.csv-uploader__dropzone--active {
+  border-color: var(--color-blue);
+  background: rgba(56, 139, 253, 0.06);
+}
+
+.csv-uploader__dropzone--error { border-color: var(--color-red); }
+
+.csv-uploader__icon { font-size: 2rem; }
+.csv-uploader__cta { font-size: 0.95rem; color: var(--color-text-muted); }
+.csv-uploader__input { display: none; }
+
+.csv-uploader__error {
+  color: var(--color-red);
+  font-size: 0.9rem;
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: var(--color-red-bg);
+  border-radius: var(--radius);
+  border: 1px solid var(--color-red);
+}
+
+.csv-uploader__success {
+  color: var(--color-green);
+  font-size: 0.9rem;
+  margin-top: 12px;
+}
+
+/* ────────────────────────────────────────── */
+/* Responsive                                 */
+/* ────────────────────────────────────────── */
+@media (min-width: 768px) {
+  .dashboard {
+    grid-template-areas:
+      "status status"
+      "alert alert"
+      "zones uploader";
+    grid-template-columns: 1fr 340px;
+  }
+}
