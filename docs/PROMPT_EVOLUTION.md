@@ -1,8 +1,8 @@
-# Prompt Engineering Evolution — VolunteerAI
+# Prompt Engineering Evolution — Apex Volunteer
 
 ## Overview
 
-This document traces the full V1→V5 evolution of the Gemini prompts used in VolunteerAI. Each version addresses a specific failure mode discovered during development.
+This document traces the full V1→V5 evolution of the Gemini prompts used in Apex Volunteer. Each version addresses a specific failure mode discovered during development.
 
 ---
 

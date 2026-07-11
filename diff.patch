@@ -1,0 +1,200 @@
+﻿diff --git a/.env.example b/.env.example
+index 858f569..74f8750 100644
+--- a/.env.example
++++ b/.env.example
+@@ -1,4 +1,4 @@
+-# Environment Variables ΓÇö VolunteerAI
++# Environment Variables ΓÇö Apex Volunteer
+ 
+ # ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+ # Firebase (Frontend SDK ΓÇö Vite exposes VITE_ prefix)
+diff --git a/.gitignore b/.gitignore
+index 7e718f6..b328ef5 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,4 +1,4 @@
+-# ΓöÇΓöÇΓöÇ VolunteerAI .gitignore ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++# ΓöÇΓöÇΓöÇ Apex Volunteer .gitignore ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+ 
+ # Dependencies
+ node_modules/
+diff --git a/ARCHITECTURE.md b/ARCHITECTURE.md
+index 60fad31..4d44eea 100644
+--- a/ARCHITECTURE.md
++++ b/ARCHITECTURE.md
+@@ -1,4 +1,4 @@
+-# VolunteerAI ΓÇö System Architecture
++# Apex Volunteer ΓÇö System Architecture
+ 
+ ## System Overview
+ 
+diff --git a/README.md b/README.md
+index a377b98..dcb0d97 100644
+--- a/README.md
++++ b/README.md
+@@ -1,8 +1,8 @@
+-# VolunteerAI ΓÇö FIFA 2026 Crowd Flow Co-pilot [PromptWars - Challenge 4]
++# Apex Volunteer ΓÇö FIFA 2026 Crowd Flow Co-pilot [PromptWars - Challenge 4]
+ 
+ > AI-powered real-time crowd management assistant for stadium volunteers. Built for Prompt Wars Challenge 4.
+ 
+-[![Netlify Status](https://api.netlify.com/api/v1/badges/YOUR_BADGE_ID/deploy-status)](https://volunteerai.netlify.app)
++[![Netlify Status](https://api.netlify.com/api/v1/badges/YOUR_BADGE_ID/deploy-status)](https://Apex Volunteer.netlify.app)
+ 
+ ---
+ 
+@@ -10,7 +10,7 @@
+ 
+ At a FIFA 2026 stadium, 80,000+ fans flood through 10+ gates simultaneously. Volunteers on the ground have no real-time data, no smart recommendations, and no way to communicate instructions in a fan's native language. Chaos ensues.
+ 
+-**VolunteerAI** solves this with a live crowd co-pilot: monitors zone occupancy in real-time, generates AI-reasoned rerouting instructions the moment a zone hits 80% capacity, and translates them into Spanish, French, German, or Hindi with tone-appropriate phrasing (formal for PA systems, casual for 1-on-1).
++**Apex Volunteer** solves this with a live crowd co-pilot: monitors zone occupancy in real-time, generates AI-reasoned rerouting instructions the moment a zone hits 80% capacity, and translates them into Spanish, French, German, or Hindi with tone-appropriate phrasing (formal for PA systems, casual for 1-on-1).
+ 
+ ---
+ 
+diff --git a/docs/PROMPT_EVOLUTION.md b/docs/PROMPT_EVOLUTION.md
+index b8cf157..66f9d29 100644
+--- a/docs/PROMPT_EVOLUTION.md
++++ b/docs/PROMPT_EVOLUTION.md
+@@ -1,8 +1,8 @@
+-# Prompt Engineering Evolution ΓÇö VolunteerAI
++# Prompt Engineering Evolution ΓÇö Apex Volunteer
+ 
+ ## Overview
+ 
+-This document traces the full V1ΓåÆV5 evolution of the Gemini prompts used in VolunteerAI. Each version addresses a specific failure mode discovered during development.
++This document traces the full V1ΓåÆV5 evolution of the Gemini prompts used in Apex Volunteer. Each version addresses a specific failure mode discovered during development.
+ 
+ ---
+ 
+diff --git a/docs/TESTING.md b/docs/TESTING.md
+index 84f4b62..93a4450 100644
+--- a/docs/TESTING.md
++++ b/docs/TESTING.md
+@@ -1,4 +1,4 @@
+-# VolunteerAI ΓÇö Testing Guide
++# Apex Volunteer ΓÇö Testing Guide
+ 
+ ## Setup
+ 
+diff --git a/functions/package.json b/functions/package.json
+index e5437b7..fa6225f 100644
+--- a/functions/package.json
++++ b/functions/package.json
+@@ -1,7 +1,7 @@
+ {
+   "name": "volunteer-ai-functions",
+   "version": "1.0.0",
+-  "description": "Firebase Cloud Functions for VolunteerAI",
++  "description": "Firebase Cloud Functions for Apex Volunteer",
+   "main": "src/index.js",
+   "engines": { "node": "18" },
+   "scripts": {
+diff --git a/functions/src/index.js b/functions/src/index.js
+index 070635a..4f84b9d 100644
+--- a/functions/src/index.js
++++ b/functions/src/index.js
+@@ -1,5 +1,5 @@
+ /**
+- * Cloud Functions HTTP router ΓÇö VolunteerAI backend.
++ * Cloud Functions HTTP router ΓÇö Apex Volunteer backend.
+  * Endpoints: POST /uploadCSV, POST /generateAlert, POST /translate
+  * All inputs validated. All Gemini calls wrapped in error handling.
+  * Structured Cloud Logging on every request.
+diff --git a/index.html b/index.html
+index f1991e5..461eeb3 100644
+--- a/index.html
++++ b/index.html
+@@ -3,23 +3,23 @@
+   <head>
+     <meta charset="UTF-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+-    <meta name="description" content="VolunteerAI ΓÇö Real-time AI-powered crowd management co-pilot for FIFA 2026 stadium volunteers. Live zone occupancy, multilingual alerts, and AI-reasoned rerouting instructions." />
++    <meta name="description" content="Apex Volunteer ΓÇö Real-time AI-powered crowd management co-pilot for FIFA 2026 stadium volunteers. Live zone occupancy, multilingual alerts, and AI-reasoned rerouting instructions." />
+     <meta name="keywords" content="FIFA 2026, crowd management, stadium volunteer, AI, real-time, multilingual" />
+     <meta name="theme-color" content="#0d1117" />
+ 
+     <!-- Open Graph -->
+-    <meta property="og:title" content="VolunteerAI ΓÇö FIFA 2026 Crowd Co-pilot" />
++    <meta property="og:title" content="Apex Volunteer ΓÇö FIFA 2026 Crowd Co-pilot" />
+     <meta property="og:description" content="AI-powered real-time crowd management for stadium volunteers. Gemini + Firestore + multilingual alerts." />
+     <meta property="og:type" content="website" />
+ 
+     <!-- Favicon -->
+     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+ 
+-    <title>VolunteerAI ΓÇö FIFA 2026 Crowd Co-pilot</title>
++    <title>Apex Volunteer ΓÇö FIFA 2026 Crowd Co-pilot</title>
+   </head>
+   <body>
+     <div id="root"></div>
+-    <noscript>VolunteerAI requires JavaScript to run. Please enable JavaScript in your browser.</noscript>
++    <noscript>Apex Volunteer requires JavaScript to run. Please enable JavaScript in your browser.</noscript>
+     <script type="module" src="/src/main.jsx"></script>
+   </body>
+ </html>
+diff --git a/scripts/generateCSV.js b/scripts/generateCSV.js
+index 036f5cb..a3cae7e 100644
+--- a/scripts/generateCSV.js
++++ b/scripts/generateCSV.js
+@@ -1,5 +1,5 @@
+ /**
+- * Synthetic data generator for VolunteerAI.
++ * Synthetic data generator for Apex Volunteer.
+  * Run locally to generate a realistic stadium CSV for testing.
+  *
+  * Usage:
+diff --git a/src/components/Dashboard.jsx b/src/components/Dashboard.jsx
+index 3e3f2b9..7d1b863 100644
+--- a/src/components/Dashboard.jsx
++++ b/src/components/Dashboard.jsx
+@@ -144,7 +144,7 @@ export function Dashboard() {
+   }, []);
+ 
+   return (
+-    <main className="dashboard" aria-label="VolunteerAI ΓÇö Live Zone Dashboard">
++    <main className="dashboard" aria-label="Apex Volunteer ΓÇö Live Zone Dashboard">
+       {/* Connection status banner */}
+       {connectionState !== 'connected' && (
+         <div
+@@ -174,7 +174,7 @@ export function Dashboard() {
+       {/* Zone Grid */}
+       <section className="dashboard__zones" aria-label="Stadium zone occupancy grid">
+         <h1 className="dashboard__title">
+-          ≡ƒÅƒ∩╕Å VolunteerAI ΓÇö FIFA 2026 Crowd Co-pilot
++          ≡ƒÅƒ∩╕Å Apex Volunteer ΓÇö FIFA 2026 Crowd Co-pilot
+           <span className="dashboard__live-badge" aria-label="Live data indicator">ΓùÅ LIVE</span>
+         </h1>
+ 
+diff --git a/src/firebase/init.js b/src/firebase/init.js
+index e7ff74c..e3e99e8 100644
+--- a/src/firebase/init.js
++++ b/src/firebase/init.js
+@@ -1,5 +1,5 @@
+ /**
+- * Firebase SDK initialization for VolunteerAI.
++ * Firebase SDK initialization for Apex Volunteer.
+  * Reads all config from Vite environment variables ΓÇö no hardcoded values.
+  */
+ import { initializeApp, getApps } from 'firebase/app';
+diff --git a/src/index.css b/src/index.css
+index ef49d2e..ed0e08c 100644
+--- a/src/index.css
++++ b/src/index.css
+@@ -1,4 +1,4 @@
+-/* VolunteerAI ΓÇö Design System
++/* Apex Volunteer ΓÇö Design System
+    Dark FIFA-themed UI. All animations are CSS-only. No JS layout repaints.
+    Accessibility: high contrast ratios, visible focus rings, semantic spacing.
+ */
+diff --git a/src/lib/csvValidator.js b/src/lib/csvValidator.js
+index 46f26bf..4978dd8 100644
+--- a/src/lib/csvValidator.js
++++ b/src/lib/csvValidator.js
+@@ -1,5 +1,5 @@
+ /**
+- * CSV validation utilities for VolunteerAI.
++ * CSV validation utilities for Apex Volunteer.
+  * All validation happens on the frontend before any network call is made.
+  * Errors are row-specific and actionable, never generic.
+  */

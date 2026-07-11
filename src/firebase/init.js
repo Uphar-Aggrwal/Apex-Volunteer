@@ -1,5 +1,5 @@
 /**
- * Firebase SDK initialization for VolunteerAI.
+ * Firebase SDK initialization for Apex Volunteer.
  * Reads all config from Vite environment variables — no hardcoded values.
  */
 import { initializeApp, getApps } from 'firebase/app';

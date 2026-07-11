@@ -1,7 +1,7 @@
 {
   "name": "volunteer-ai-functions",
   "version": "1.0.0",
-  "description": "Firebase Cloud Functions for VolunteerAI",
+  "description": "Firebase Cloud Functions for Apex Volunteer",
   "main": "src/index.js",
   "engines": { "node": "18" },
   "scripts": {

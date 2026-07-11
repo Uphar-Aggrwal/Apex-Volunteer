@@ -144,7 +144,7 @@ export function Dashboard() {
   }, []);
 
   return (
-    <main className="dashboard" aria-label="VolunteerAI — Live Zone Dashboard">
+    <main className="dashboard" aria-label="Apex Volunteer — Live Zone Dashboard">
       {/* Connection status banner */}
       {connectionState !== 'connected' && (
         <div
@@ -174,7 +174,7 @@ export function Dashboard() {
       {/* Zone Grid */}
       <section className="dashboard__zones" aria-label="Stadium zone occupancy grid">
         <h1 className="dashboard__title">
-          🏟️ VolunteerAI — FIFA 2026 Crowd Co-pilot
+          🏟️ Apex Volunteer — FIFA 2026 Crowd Co-pilot
           <span className="dashboard__live-badge" aria-label="Live data indicator">● LIVE</span>
         </h1>
 

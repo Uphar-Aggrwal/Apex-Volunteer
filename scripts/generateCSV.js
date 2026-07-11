@@ -1,5 +1,5 @@
 /**
- * Synthetic data generator for VolunteerAI.
+ * Synthetic data generator for Apex Volunteer.
  * Run locally to generate a realistic stadium CSV for testing.
  *
  * Usage:

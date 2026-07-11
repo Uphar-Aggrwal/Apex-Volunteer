@@ -1,4 +1,4 @@
-# VolunteerAI — Testing Guide
+# Apex Volunteer — Testing Guide
 
 ## Setup
 

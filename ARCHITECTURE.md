@@ -1,4 +1,4 @@
-# VolunteerAI — System Architecture
+# Apex Volunteer — System Architecture
 
 ## System Overview
 

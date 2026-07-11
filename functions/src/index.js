@@ -1,5 +1,5 @@
 /**
- * Cloud Functions HTTP router — VolunteerAI backend.
+ * Cloud Functions HTTP router — Apex Volunteer backend.
  * Endpoints: POST /uploadCSV, POST /generateAlert, POST /translate
  * All inputs validated. All Gemini calls wrapped in error handling.
  * Structured Cloud Logging on every request.

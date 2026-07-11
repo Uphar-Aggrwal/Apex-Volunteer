@@ -1,8 +1,8 @@
-# VolunteerAI — FIFA 2026 Crowd Flow Co-pilot [PromptWars - Challenge 4]
+# Apex Volunteer — FIFA 2026 Crowd Flow Co-pilot [PromptWars - Challenge 4]
 
 > AI-powered real-time crowd management assistant for stadium volunteers. Built for Prompt Wars Challenge 4.
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/YOUR_BADGE_ID/deploy-status)](https://volunteerai.netlify.app)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/YOUR_BADGE_ID/deploy-status)](https://apex-volunteer.netlify.app)
 
 ---
 
@@ -10,7 +10,7 @@
 
 At a FIFA 2026 stadium, 80,000+ fans flood through 10+ gates simultaneously. Volunteers on the ground have no real-time data, no smart recommendations, and no way to communicate instructions in a fan's native language. Chaos ensues.
 
-**VolunteerAI** solves this with a live crowd co-pilot: monitors zone occupancy in real-time, generates AI-reasoned rerouting instructions the moment a zone hits 80% capacity, and translates them into Spanish, French, German, or Hindi with tone-appropriate phrasing (formal for PA systems, casual for 1-on-1).
+**Apex Volunteer** solves this with a live crowd co-pilot: monitors zone occupancy in real-time, generates AI-reasoned rerouting instructions the moment a zone hits 80% capacity, and translates them into Spanish, French, German, or Hindi with tone-appropriate phrasing (formal for PA systems, casual for 1-on-1).
 
 ---
 

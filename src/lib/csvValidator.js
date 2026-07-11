@@ -1,5 +1,5 @@
 /**
- * CSV validation utilities for VolunteerAI.
+ * CSV validation utilities for Apex Volunteer.
  * All validation happens on the frontend before any network call is made.
  * Errors are row-specific and actionable, never generic.
  */
