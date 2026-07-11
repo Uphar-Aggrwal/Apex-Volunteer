@@ -1,4 +1,4 @@
-# VolunteerAI — FIFA 2026 Crowd Flow Co-pilot
+# VolunteerAI — FIFA 2026 Crowd Flow Co-pilot [PromptWars - Challenge 4]
 
 > AI-powered real-time crowd management assistant for stadium volunteers. Built for Prompt Wars Challenge 4.
 

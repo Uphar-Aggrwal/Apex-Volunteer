@@ -3,7 +3,7 @@
 ## Setup
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/volunteer-ai.git
+git clone https://github.com/Uphar-Aggrwal/volunteer-ai.git
 cd volunteer-ai
 npm install
 cd functions && npm install && cd ..
