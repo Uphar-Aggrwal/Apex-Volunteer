@@ -161,9 +161,12 @@ export function Dashboard() {
         </h1>
 
         {zones.length === 0 && connectionState === 'connected' && (
-          <p className="dashboard__empty" role="status">
-            No zone data yet. Upload a CSV to get started.
-          </p>
+          <div className="dashboard__empty" role="status">
+            <p>Welcome Judges! No zone data detected in the database.</p>
+            <p>
+              Please <a href="/sample-zones.csv" download style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>download the Sample CSV</a> and drop it into the uploader to see the AI dashboard in action!
+            </p>
+          </div>
         )}
 
         <div className="dashboard__grid" role="list" aria-label="Zone cards">
