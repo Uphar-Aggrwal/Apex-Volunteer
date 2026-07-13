@@ -89,7 +89,7 @@ exports.handler = async (event) => {
     const prompt = buildTranslationPrompt(text, targetLanguage, tone);
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-3.1-flash-lite',
       contents: prompt,
       config: {
         responseMimeType: 'application/json',
