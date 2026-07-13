@@ -58,12 +58,12 @@ async function getAccessToken(clientEmail, privateKey) {
 function toFirestoreFields(obj) {
   const fields = {};
   for (const [k, v] of Object.entries(obj)) {
-    if (typeof v === 'string')  fields[k] = { stringValue: v };
+    if (typeof v === 'string')      fields[k] = { stringValue: v };
     else if (typeof v === 'number') fields[k] = { doubleValue: v };
     else if (typeof v === 'boolean') fields[k] = { booleanValue: v };
   }
-  // Add server timestamp as a string (REST API doesn't support serverTimestamp directly)
-  fields.updatedAt = { stringValue: new Date().toISOString() };
+  // 'timestamp' must match the orderBy('timestamp') in useZoneListener.js
+  fields.timestamp = { stringValue: new Date().toISOString() };
   return fields;
 }
 
