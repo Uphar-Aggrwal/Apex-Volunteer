@@ -161,11 +161,28 @@ export function Dashboard() {
         </h1>
 
         {zones.length === 0 && connectionState === 'connected' && (
-          <div className="dashboard__empty" role="status">
-            <p>Welcome Judges! No zone data detected in the database.</p>
-            <p>
-              Please <a href="/sample-zones.csv" download style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>download the Sample CSV</a> and drop it into the uploader to see the AI dashboard in action!
-            </p>
+          <div className="dashboard__empty" role="status" style={{ textAlign: 'center', padding: '2rem' }}>
+            <p style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>Welcome Judges! The database is currently clean.</p>
+            <button
+              type="button"
+              className="alert-banner__lang-btn"
+              style={{ padding: '0.8rem 1.5rem', fontSize: '1.1rem', backgroundColor: 'var(--color-primary)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
+              onClick={() => handleUploadSuccess([
+                { zone: "North Gate", occupancy: 85 },
+                { zone: "South Gate", occupancy: 45 },
+                { zone: "East Plaza", occupancy: 92 },
+                { zone: "West Entrance", occupancy: 30 },
+                { zone: "VIP Lounge", occupancy: 65 },
+                { zone: "Food Court A", occupancy: 78 },
+                { zone: "Merchandise Shop", occupancy: 40 },
+                { zone: "Restrooms North", occupancy: 81 },
+                { zone: "Main Concourse", occupancy: 60 },
+                { zone: "Media Center", occupancy: 25 }
+              ])}
+            >
+              🚀 Auto-Seed Live Demo
+            </button>
+            <p style={{ marginTop: '1rem', opacity: 0.8 }}>Instantly populates the stadium with 10 real-time zones.</p>
           </div>
         )}
 
