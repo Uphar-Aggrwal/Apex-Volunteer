@@ -7,7 +7,7 @@
  * and bulk-writes zone data in a single batch commit.
  *
  * Environment variables required (set in Netlify UI → Site Settings → Env Vars):
- *   FIREBASE_PROJECT_ID    — e.g. apex-volunteer-d81fb
+ *   FIREBASE_PROJECT_ID    — Your Firebase project ID
  *   FIREBASE_CLIENT_EMAIL  — firebase-adminsdk-...@project.iam.gserviceaccount.com
  *   FIREBASE_PRIVATE_KEY   — The full private key (Netlify preserves \n correctly for this)
  */
