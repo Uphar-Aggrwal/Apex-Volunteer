@@ -1,7 +1,7 @@
 {
-  "name": "volunteer-ai",
+  "name": "apex-volunteer",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,11 +9,12 @@
     "preview": "vite preview",
     "lint": "eslint src --max-warnings 0",
     "test": "jest --forceExit",
-    "test:coverage": "jest --coverage --forceExit",
-    "deploy:func": "cd functions && npm install && firebase deploy --only functions"
+    "test:coverage": "jest --coverage --forceExit"
   },
   "dependencies": {
+    "@google/genai": "^2.11.0",
     "firebase": "^12.16.0",
+    "firebase-admin": "^14.1.0",
     "papaparse": "^5.5.4",
     "prop-types": "^15.8.1",
     "react": "^19.2.7",

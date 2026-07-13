@@ -1,19 +1,20 @@
 /**
  * Dashboard — main view: zone grid + alert engine.
  * Reads live data from Firestore via useZoneListener.
- * Handles AI alert generation and translation via Cloud Functions.
+ * All write operations (CSV upload) and AI calls (alerts, translation)
+ * are handled by Netlify Serverless Functions at /api/*
  */
 import { useState, useCallback } from 'react';
-import { writeBatch, doc, serverTimestamp } from 'firebase/firestore';
-import { db, COLLECTIONS } from '../firebase/init';
 import { useZoneListener } from '../hooks/useZoneListener';
 import { ZoneCard } from './ZoneCard';
 import { AlertBanner } from './AlertBanner';
 import { CSVUploader } from './CSVUploader';
 import { getAlertFallback, getTranslationFallback, parseGeminiResponse, isValidAlertResponse } from '../lib/geminiUtils';
 
-const FUNCTIONS_BASE = import.meta.env.VITE_FUNCTIONS_BASE_URL ?? '';
-const MAX_UPLOAD_RETRIES = 3;
+// In dev: Vite proxies /api/* to localhost:8888 (netlify dev)
+// In prod: netlify.toml redirects /api/* to /.netlify/functions/*
+const FUNCTIONS_BASE = '/api';
+
 
 export function Dashboard() {
   const { zones, connectionState, error: listenerError, isFromCache } = useZoneListener();
@@ -103,38 +104,19 @@ export function Dashboard() {
   /** Write uploaded CSV rows to Firestore in a batch */
   const handleUploadSuccess = useCallback(async (rows) => {
     setUploadError(null);
-    let attempt = 0;
-
-    const writeRows = async () => {
-      const batch = writeBatch(db);
-      rows.forEach((row) => {
-        const ref = doc(COLLECTIONS.zones, String(row.zone).replace(/\s+/g, '-').toLowerCase());
-        batch.set(ref, {
-          zone: String(row.zone).trim(),
-          occupancy: Number(row.occupancy),
-          timestamp: serverTimestamp(),
-        });
+    try {
+      const res = await fetch(`${FUNCTIONS_BASE}/uploadCSV`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rows }),
       });
-      await batch.commit();
-    };
-
-    while (attempt < MAX_UPLOAD_RETRIES) {
-      try {
-        await writeRows();
-        return;
-      } catch (err) {
-        attempt += 1;
-        if (err.code === 'resource-exhausted') {
-          const waitMs = 1000 * Math.pow(2, attempt);
-          setUploadError(`Server busy. Retrying in ${waitMs / 1000}s... (attempt ${attempt}/${MAX_UPLOAD_RETRIES})`);
-          await new Promise((r) => setTimeout(r, waitMs));
-        } else {
-          setUploadError(`❌ Upload failed: ${err.message}. Please try again.`);
-          return;
-        }
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || `Server error: ${res.status}`);
       }
+    } catch (err) {
+      setUploadError(`❌ Upload failed: ${err.message}`);
     }
-    setUploadError(`❌ Upload failed after ${MAX_UPLOAD_RETRIES} retries. Please try again later.`);
   }, []);
 
   const handleResolve = useCallback(() => {

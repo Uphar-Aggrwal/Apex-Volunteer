@@ -1,17 +1,22 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Zones: read-only from client, writes only from Cloud Functions (server-side admin SDK)
+
+    // Zones — readable by all clients (real-time onSnapshot).
+    // Writes are performed server-side via Firebase Admin SDK in Netlify Functions,
+    // which bypass these rules entirely, so client write is locked.
     match /zones/{zoneId} {
       allow read: if true;
-      allow write: if false; // Only Cloud Functions write zones
+      allow write: if false;
     }
-    // Alerts: read-only from client
+
+    // Alerts — read-only from clients
     match /alerts/{alertId} {
       allow read: if true;
       allow write: if false;
     }
-    // Translations: read-only from client
+
+    // Translations — read-only from clients
     match /translations/{translationId} {
       allow read: if true;
       allow write: if false;

@@ -1,19 +1,29 @@
 [build]
-  command = "npm run build"
-  publish = "dist"
+  command    = "npm run build"
+  publish    = "dist"
 
-[build.environment]
-  NODE_VERSION = "18"
+[functions]
+  # Netlify bundles all JS in netlify/functions/ — no separate install needed
+  node_bundler = "esbuild"
 
+# All /api/* calls are proxied to Netlify Serverless Functions
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
+  from   = "/api/uploadCSV"
+  to     = "/.netlify/functions/uploadCSV"
   status = 200
 
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+[[redirects]]
+  from   = "/api/generateAlert"
+  to     = "/.netlify/functions/generateAlert"
+  status = 200
+
+[[redirects]]
+  from   = "/api/translate"
+  to     = "/.netlify/functions/translate"
+  status = 200
+
+# React SPA catch-all — must be last
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200

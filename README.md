@@ -1,6 +1,7 @@
-# Apex Volunteer — FIFA 2026 Crowd Flow Co-pilot [PromptWars - Challenge 4]
+# Apex Volunteer — FIFA 2026 Crowd Flow Co-pilot
+### *AI-powered, real-time crowd management assistant for stadium volunteers*
 
-> AI-powered real-time crowd management assistant for stadium volunteers. Built for Prompt Wars Challenge 4.
+> Built for **Prompt Wars Challenge 4**. Ranked — [Apex-Volunteer on GitHub](https://github.com/Uphar-Aggrwal/Apex-Volunteer)
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/YOUR_BADGE_ID/deploy-status)](https://apex-volunteer.netlify.app)
 
@@ -8,9 +9,9 @@
 
 ## 🎯 Problem Statement
 
-At a FIFA 2026 stadium, 80,000+ fans flood through 10+ gates simultaneously. Volunteers on the ground have no real-time data, no smart recommendations, and no way to communicate instructions in a fan's native language. Chaos ensues.
+At a FIFA 2026 stadium, 80,000+ fans flood through 10+ gates simultaneously. Volunteers have no real-time data, no smart AI recommendations, and no way to communicate instructions in a fan's native language. Chaos ensues.
 
-**Apex Volunteer** solves this with a live crowd co-pilot: monitors zone occupancy in real-time, generates AI-reasoned rerouting instructions the moment a zone hits 80% capacity, and translates them into Spanish, French, German, or Hindi with tone-appropriate phrasing (formal for PA systems, casual for 1-on-1).
+**Apex Volunteer** solves this with a live crowd co-pilot: monitors zone occupancy in real-time, generates AI-reasoned rerouting instructions the moment a zone hits 80% capacity, and translates them into Spanish, French, German, Hindi, Arabic, and Portuguese — with tone-appropriate phrasing (formal for PA systems, casual for 1-on-1 conversations).
 
 ---
 
@@ -18,26 +19,26 @@ At a FIFA 2026 stadium, 80,000+ fans flood through 10+ gates simultaneously. Vol
 
 | Feature | Description |
 |---|---|
-| **Live Zone Dashboard** | 10 stadium zones as color-coded cards (Green <60%, Yellow 60–79%, Red ≥80%). Updates every 5s via Firestore `onSnapshot()`. |
-| **AI Alert Engine** | When a zone hits ≥80%, Gemini 1.5 Flash generates a specific, reasoned instruction referencing actual occupancy numbers. |
-| **Multilingual Translator** | Translate any alert to ES/FR/DE/HI. Toggle between Formal (PA) and Casual (direct conversation) tone. |
+| **Live Zone Dashboard** | 10 stadium zones as color-coded cards (🟢 <60%, 🟡 60–79%, 🔴 ≥80%). Updates in real-time via Firestore `onSnapshot()`. |
+| **AI Alert Engine** | When a zone hits ≥80%, Gemini 2.5 Flash generates a specific, reasoned, actionable instruction referencing actual occupancy numbers. |
+| **Multilingual Translator** | Translate any alert to ES / FR / DE / HI / AR / PT. Toggle between Formal (PA) and Casual (direct conversation) tone. |
 | **CSV Uploader** | Drag-and-drop. Validates every row client-side before upload. Shows exact row-level errors. Proves no hardcoded data. |
-| **Graceful Fallbacks** | Gemini fails → safe template. Translation fails → English original + warning badge. Firebase quota → retry with backoff. |
+| **Graceful Fallbacks** | Gemini fails → safe template. Translation fails → English original + warning badge. Firebase quota → auto-retry. |
 
 ---
 
 ## 🏗️ Architecture
 
 ```
-Browser (React + Vite, Netlify CDN)
-   │
-   ├─ onSnapshot() ──────────► Firestore /zones (asia-south1)
-   │
-   ├─ POST /generateAlert ───► Cloud Function ──► Gemini 1.5 Flash
-   │
-   ├─ POST /translate ───────► Cloud Function ──► Gemini 1.5 Flash
-   │                                          (cache in /translations)
-   └─ POST /uploadCSV ───────► Cloud Function ──► Firestore bulk write
+ Browser (React 19 + Vite 8, hosted on Netlify CDN)
+    │
+    ├─ onSnapshot() ───────────► Firestore /zones   (real-time reads)
+    │
+    ├─ POST /api/uploadCSV ────► Netlify Function ──► Firebase Admin ──► Firestore
+    │
+    ├─ POST /api/generateAlert ► Netlify Function ──► Gemini 2.5 Flash
+    │
+    └─ POST /api/translate ────► Netlify Function ──► Gemini 2.5 Flash
 ```
 
 See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the full system diagram and failure modes.
@@ -48,136 +49,123 @@ See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the full system diagram and failu
 
 | Layer | Technology | Free Quota |
 |---|---|---|
-| Frontend | React 18 + Vite | Netlify: 100 GB bandwidth/month |
-| Hosting | Netlify | 300 build minutes/month |
-| Database | Firestore (asia-south1) | 50k reads/day, 20k writes/day |
-| Backend | Firebase Cloud Functions (Node 18) | 2M invocations/month |
-| AI Engine | Gemini 1.5 Flash | 60 RPM free |
-| Maps | Google Maps JS API | 28k map loads/month |
+| Frontend | React 19 + Vite 8 | — |
+| Hosting | Netlify | 100 GB bandwidth/month, 300 build minutes |
+| Serverless Backend | Netlify Functions (Node.js) | **125,000 requests/month free — no billing needed** |
+| Database | Firestore (Google Firebase) | 50,000 reads/day, 20,000 writes/day |
+| AI Engine | Gemini 2.5 Flash | 60 RPM free tier |
+
+> 💡 **Zero cloud billing required.** Netlify Functions are completely free for this scale and do not require a credit card.
 
 ---
 
-## 🚀 Setup
+## 🚀 Local Development
 
 ### Prerequisites
 - Node.js 18+
-- Firebase CLI: `npm install -g firebase-tools`
-- Firebase project with Firestore + Cloud Functions enabled
+- A Firebase project with Firestore enabled (Spark/free plan is fine)
 
 ### 1. Clone and install
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/volunteer-ai.git
-cd volunteer-ai
+git clone https://github.com/Uphar-Aggrwal/Apex-Volunteer.git
+cd Apex-Volunteer
 npm install
-cd functions && npm install && cd ..
 ```
 
 ### 2. Configure environment
 
+The `.env` file is already pre-configured for the Firebase project. If you are forking for your own use:
+
 ```bash
 cp .env.example .env
-# Fill in all VITE_* values from your Firebase project settings
+# Fill in your own VITE_FIREBASE_* values from your Firebase project settings
 ```
 
-### 3. Set Gemini API key (Cloud Functions only — never on frontend)
-
-```bash
-firebase functions:config:set gemini.key="YOUR_GEMINI_API_KEY"
-```
-
-### 4. Run locally
+### 3. Run locally
 
 ```bash
 npm run dev
 ```
 
-### 5. Deploy
-
-```bash
-# Deploy Cloud Functions
-npm run deploy:func
-
-# Deploy frontend (push to GitHub → Netlify auto-deploys)
-git push origin main
-```
+The Vite dev server starts at `http://localhost:5173`. API calls to `/api/*` are automatically handled by `netlify.toml` during deployment.
 
 ---
 
 ## 🧪 Testing
 
 ```bash
-# Frontend unit tests
+# Run all unit tests (Frontend + Backend)
 npm test
 
-# Frontend with coverage report (target: >85%)
+# Run tests with coverage report
 npm run test:coverage
-
-# Cloud Function unit tests
-cd functions && npm test
-
-# Cloud Function with coverage
-cd functions && npm run test:coverage
 ```
 
-**Test categories:**
-- CSV validation (13 tests) — valid rows, negative occupancy, missing columns, empty files
-- Gemini utilities (14 tests) — JSON parsing, fallback objects, prompt injection
-- Cloud Function CSV validator (13 tests) — server-side defense-in-depth
-- Gemini orchestrator (13 tests) — retry logic, malformed JSON, timeout handling
-- Translation orchestrator (9 tests) — prompt building, cache key generation
+**Test categories (60 tests across 5 suites):**
+- **CSV validation** (13 tests) — valid rows, negative occupancy, missing columns, empty files
+- **Gemini utilities** (14 tests) — JSON parsing, fallback objects, prompt injection defense
+- **Netlify Backend Functions** (33 tests):
+  - `generateAlert` — Prompt construction for Gemini
+  - `translate` — Multilingual translation prompting with formal/casual tone support
+  - `uploadCSV` — Server-side CSV validation ensuring 100% data integrity before Firestore write
 
 ---
 
 ## 📁 Project Structure
 
 ```
-volunteer-ai/
+Apex-Volunteer/
 ├── src/
 │   ├── components/
-│   │   ├── Dashboard.jsx        # Main view: zone grid + alert engine
-│   │   ├── ZoneCard.jsx         # Color-coded zone card (accessible)
-│   │   ├── AlertBanner.jsx      # AI instruction + translation panel
-│   │   └── CSVUploader.jsx      # Drag-drop uploader with validation
+│   │   ├── Dashboard.jsx          # Main view: zone grid + alert engine
+│   │   ├── ZoneCard.jsx           # Color-coded zone card (accessible)
+│   │   ├── AlertBanner.jsx        # AI instruction + translation panel
+│   │   └── CSVUploader.jsx        # Drag-drop uploader with validation
 │   ├── hooks/
-│   │   └── useZoneListener.js   # Firestore real-time listener + backoff
+│   │   └── useZoneListener.js     # Firestore real-time listener + backoff
 │   ├── firebase/
-│   │   └── init.js              # Firebase SDK init (env vars only)
-│   ├── lib/
-│   │   ├── csvValidator.js      # Pure validation functions (testable)
-│   │   └── geminiUtils.js       # Gemini parse/fallback utilities
-│   └── __tests__/               # Frontend unit tests
-├── functions/
-│   ├── src/
-│   │   ├── index.js             # Cloud Function HTTP router
-│   │   ├── validateCSV.js       # Server-side CSV validation
-│   │   ├── geminiOrchestrator.js # Gemini alert generation + retry
-│   │   ├── translationOrchestrator.js # Translation + Firestore cache
-│   │   └── __tests__/           # Cloud Function unit tests
-│   └── package.json
-├── ARCHITECTURE.md
-├── firestore.rules              # Security rules
-├── firebase.json
-├── netlify.toml
-└── .env.example
+│   │   └── init.js                # Firebase SDK init (env vars only)
+│   └── lib/
+│       ├── csvValidator.js        # Pure validation functions (testable)
+│       └── geminiUtils.js         # Gemini parse/fallback utilities
+│
+├── netlify/
+│   └── functions/
+│       ├── uploadCSV.js           # Bulk-writes CSV rows to Firestore
+│       ├── generateAlert.js       # Gemini AI crowd alert generator
+│       └── translate.js           # Gemini multilingual translator
+│
+├── netlify.toml                   # Build config + /api/* → functions routing
+├── firestore.rules                # Database security rules
+├── ARCHITECTURE.md                # Full system diagram + failure modes
+├── DEPLOYMENT.md                  # Step-by-step deployment guide
+└── .env                           # Local secrets (git-ignored)
 ```
 
 ---
 
 ## 🔑 Environment Variables
 
-| Variable | Required | Description |
-|---|---|---|
-| `VITE_FIREBASE_API_KEY` | ✅ | Firebase project API key |
-| `VITE_FIREBASE_PROJECT_ID` | ✅ | Firebase project ID |
-| `VITE_FIREBASE_AUTH_DOMAIN` | ✅ | Firebase auth domain |
-| `VITE_FIREBASE_APP_ID` | ✅ | Firebase app ID |
-| `VITE_FIREBASE_MESSAGING_SENDER_ID` | ✅ | Firebase sender ID |
-| `VITE_FUNCTIONS_BASE_URL` | ✅ | Cloud Functions base URL |
-| `VITE_GOOGLE_MAPS_API_KEY` | Optional | Google Maps (zone visualization) |
-| `GEMINI_API_KEY` | Cloud Functions only | Set via `firebase functions:config:set` |
+### Frontend (Vite — prefix with `VITE_`)
 
-> ⚠️ Never commit `.env` or add `GEMINI_API_KEY` to frontend environment variables.
+| Variable | Description |
+|---|---|
+| `VITE_FIREBASE_API_KEY` | Firebase project API key |
+| `VITE_FIREBASE_AUTH_DOMAIN` | Firebase auth domain |
+| `VITE_FIREBASE_PROJECT_ID` | Firebase project ID |
+| `VITE_FIREBASE_STORAGE_BUCKET` | Firebase storage bucket |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | Firebase sender ID |
+| `VITE_FIREBASE_APP_ID` | Firebase app ID |
+
+### Backend (Netlify Functions — set in Netlify UI)
+
+| Variable | Description |
+|---|---|
+| `GEMINI_API_KEY` | Google AI Studio API key |
+| `FIREBASE_SERVICE_ACCOUNT` | Firebase service account JSON (single-line string) |
+
+> ⚠️ Never commit `.env` to Git. The `.gitignore` already blocks it.
 
 ---
 
@@ -185,16 +173,16 @@ volunteer-ai/
 
 | Scenario | Behavior |
 |---|---|
-| Empty CSV | Frontend shows: "⚠️ File is empty or missing headers." Cloud Function never called. |
-| Negative occupancy (Row 3: -5) | "❌ Row 3: occupancy is -5 — must be 0–100." |
-| Gemini malformed JSON | Retry once with stricter prompt → fallback template + `Ref: AI-malformed` |
-| Gemini 429 quota | Frontend shows countdown, exponential backoff (1s, 2s, 4s) |
-| Translation fails | Returns English original + "⚠️ Translation unavailable" badge |
-| Firebase quota hit | "Server busy. Retrying in Xs..." with auto-retry |
+| Empty CSV | Frontend shows: "⚠️ File is empty or missing headers." Backend never called. |
+| Negative occupancy (Row 3: -5) | "❌ Row 3: occupancy -5 — must be 0–100." Both client and server validate. |
+| Gemini malformed JSON | Retry once with stricter prompt → graceful fallback template + `Ref: AI-malformed` |
+| Gemini 429 quota | Frontend shows retry countdown, exponential backoff (1s, 2s, 4s) |
+| Translation fails | Returns English original + "⚠️ Translation unavailable" badge. Never silent. |
+| Firebase read quota | "⚠️ Showing cached data — reconnecting..." with auto-reconnect |
 | CSV > 2MB | "❌ File too large (X.X MB). Maximum 2 MB." |
 
 ---
 
 ## 📄 License
 
-MIT
+MIT © 2026 Uphar Aggrwal
