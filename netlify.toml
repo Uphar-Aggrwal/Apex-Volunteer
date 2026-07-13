@@ -3,8 +3,10 @@
   publish    = "dist"
 
 [functions]
-  # Netlify bundles all JS in netlify/functions/ — no separate install needed
-  node_bundler = "esbuild"
+  # zisi correctly handles firebase-admin's native Node.js modules
+  # esbuild cannot bundle @google-cloud/* native deps used by firebase-admin
+  node_bundler = "zisi"
+  included_files = ["netlify/functions/**"]
 
 # All /api/* calls are proxied to Netlify Serverless Functions
 [[redirects]]
