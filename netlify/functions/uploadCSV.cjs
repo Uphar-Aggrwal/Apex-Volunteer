@@ -7,19 +7,26 @@
  * and bulk-writes zone data in a single batch commit.
  *
  * Environment variables required (set in Netlify UI → Site Settings → Env Vars):
- *   FIREBASE_SERVICE_ACCOUNT  — Full JSON of the Firebase service account key (single line)
+ *   FIREBASE_PROJECT_ID    — e.g. apex-volunteer-d81fb
+ *   FIREBASE_CLIENT_EMAIL  — firebase-adminsdk-...@project.iam.gserviceaccount.com
+ *   FIREBASE_PRIVATE_KEY   — The full private key (Netlify preserves \n correctly for this)
  */
 
 const admin = require('firebase-admin');
 
 // ── Firebase Admin init (singleton pattern) ─────────────────────────────────
 if (!admin.apps.length) {
-  const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
-  if (!raw) {
-    console.error('[uploadCSV] FIREBASE_SERVICE_ACCOUNT env var is missing.');
+  const projectId    = process.env.FIREBASE_PROJECT_ID;
+  const clientEmail  = process.env.FIREBASE_CLIENT_EMAIL;
+  const privateKey   = (process.env.FIREBASE_PRIVATE_KEY || '').replace(/\\n/g, '\n');
+
+  if (!projectId || !clientEmail || !privateKey) {
+    console.error('[uploadCSV] Missing Firebase env vars (FIREBASE_PROJECT_ID / FIREBASE_CLIENT_EMAIL / FIREBASE_PRIVATE_KEY).');
   } else {
     try {
-      admin.initializeApp({ credential: admin.credential.cert(JSON.parse(raw)) });
+      admin.initializeApp({
+        credential: admin.credential.cert({ projectId, clientEmail, privateKey }),
+      });
     } catch (e) {
       console.error('[uploadCSV] Firebase Admin init failed:', e.message);
     }
