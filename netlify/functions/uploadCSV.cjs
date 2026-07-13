@@ -2,38 +2,85 @@
  * Netlify Serverless Function — uploadCSV
  * POST /api/uploadCSV
  *
- * Receives validated CSV rows from the React frontend,
- * authenticates with Firestore via a Firebase Admin service account,
- * and bulk-writes zone data in a single batch commit.
+ * Receives validated CSV rows from the React frontend and bulk-writes
+ * zone data to Firestore using the REST API + a service account JWT.
+ * Uses ONLY built-in Node.js modules (crypto, fetch) — no firebase-admin.
  *
  * Environment variables required (set in Netlify UI → Site Settings → Env Vars):
  *   FIREBASE_PROJECT_ID    — Your Firebase project ID
- *   FIREBASE_CLIENT_EMAIL  — firebase-adminsdk-...@project.iam.gserviceaccount.com
- *   FIREBASE_PRIVATE_KEY   — The full private key (Netlify preserves \n correctly for this)
+ *   FIREBASE_CLIENT_EMAIL  — Service account client email
+ *   FIREBASE_PRIVATE_KEY   — Service account private key (with literal \n)
  */
 
-const admin = require('firebase-admin');
+const { createSign } = require('crypto');
 
-// ── Firebase Admin init (singleton pattern) ─────────────────────────────────
-if (!admin.apps.length) {
-  const projectId    = process.env.FIREBASE_PROJECT_ID;
-  const clientEmail  = process.env.FIREBASE_CLIENT_EMAIL;
-  const privateKey   = (process.env.FIREBASE_PRIVATE_KEY || '').replace(/\\n/g, '\n');
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
 
-  if (!projectId || !clientEmail || !privateKey) {
-    console.error('[uploadCSV] Missing Firebase env vars (FIREBASE_PROJECT_ID / FIREBASE_CLIENT_EMAIL / FIREBASE_PRIVATE_KEY).');
-  } else {
-    try {
-      admin.initializeApp({
-        credential: admin.credential.cert({ projectId, clientEmail, privateKey }),
-      });
-    } catch (e) {
-      console.error('[uploadCSV] Firebase Admin init failed:', e.message);
-    }
+// ── JWT / OAuth helpers ───────────────────────────────────────────────────────
+function b64url(str) {
+  return Buffer.from(str).toString('base64url');
+}
+
+async function getAccessToken(clientEmail, privateKey) {
+  const now = Math.floor(Date.now() / 1000);
+  const header  = b64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }));
+  const payload = b64url(JSON.stringify({
+    iss:   clientEmail,
+    scope: 'https://www.googleapis.com/auth/datastore',
+    aud:   'https://oauth2.googleapis.com/token',
+    exp:   now + 3600,
+    iat:   now,
+  }));
+
+  const toSign = `${header}.${payload}`;
+  const sign = createSign('RSA-SHA256');
+  sign.update(toSign);
+  const sig = sign.sign(privateKey, 'base64')
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+
+  const jwt = `${toSign}.${sig}`;
+
+  const res = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=${jwt}`,
+  });
+  const data = await res.json();
+  if (!data.access_token) throw new Error(`Token exchange failed: ${JSON.stringify(data)}`);
+  return data.access_token;
+}
+
+// ── Firestore REST write ──────────────────────────────────────────────────────
+function toFirestoreFields(obj) {
+  const fields = {};
+  for (const [k, v] of Object.entries(obj)) {
+    if (typeof v === 'string')  fields[k] = { stringValue: v };
+    else if (typeof v === 'number') fields[k] = { doubleValue: v };
+    else if (typeof v === 'boolean') fields[k] = { booleanValue: v };
+  }
+  // Add server timestamp as a string (REST API doesn't support serverTimestamp directly)
+  fields.updatedAt = { stringValue: new Date().toISOString() };
+  return fields;
+}
+
+async function firestorePatch(projectId, collection, docId, data, token) {
+  const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/${collection}/${docId}`;
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields: toFirestoreFields(data) }),
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Firestore PATCH ${docId} failed: ${err}`);
   }
 }
 
-// ── Server-side CSV validation (mirrors frontend, defence-in-depth) ──────────
+// ── Server-side CSV validation (mirrors frontend — defence in depth) ──────────
 function validateRows(rows) {
   if (!Array.isArray(rows) || rows.length === 0) {
     return { valid: false, error: 'Payload must be a non-empty array of rows.' };
@@ -51,13 +98,7 @@ function validateRows(rows) {
   return { valid: true, count: rows.length };
 }
 
-const CORS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
-
-// ── Handler ──────────────────────────────────────────────────────────────────
+// ── Handler ───────────────────────────────────────────────────────────────────
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: CORS, body: '' };
   if (event.httpMethod !== 'POST') {
@@ -76,28 +117,32 @@ exports.handler = async (event) => {
     return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: validation.error }) };
   }
 
-  if (!admin.apps.length) {
-    return { statusCode: 503, headers: CORS, body: JSON.stringify({ error: 'Firebase not initialised. Check FIREBASE_SERVICE_ACCOUNT env var.' }) };
+  const projectId   = process.env.FIREBASE_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  const privateKey  = (process.env.FIREBASE_PRIVATE_KEY || '').replace(/\\n/g, '\n');
+
+  if (!projectId || !clientEmail || !privateKey) {
+    console.error('[uploadCSV] Missing Firebase env vars.');
+    return { statusCode: 503, headers: CORS, body: JSON.stringify({ error: 'Server not configured. Check Firebase env vars.' }) };
   }
 
   try {
-    const db = admin.firestore();
-    const batch = db.batch();
+    const token = await getAccessToken(clientEmail, privateKey);
 
-    body.rows.forEach((row) => {
-      const id = String(row.zone).replace(/\s+/g, '-').toLowerCase();
-      batch.set(db.collection('zones').doc(id), {
-        zone:      String(row.zone).trim(),
-        occupancy: Number(row.occupancy),
-        timestamp: admin.firestore.FieldValue.serverTimestamp(),
-      });
-    });
+    await Promise.all(
+      body.rows.map((row) => {
+        const docId = String(row.zone).replace(/\s+/g, '-').toLowerCase();
+        return firestorePatch(projectId, 'zones', docId, {
+          zone:      String(row.zone).trim(),
+          occupancy: Number(row.occupancy),
+        }, token);
+      })
+    );
 
-    await batch.commit();
-    console.log(`[uploadCSV] Committed ${validation.count} zone rows.`);
+    console.log(`[uploadCSV] Committed ${validation.count} zone rows via REST API.`);
     return { statusCode: 200, headers: CORS, body: JSON.stringify({ success: true, rowCount: validation.count }) };
   } catch (err) {
-    console.error('[uploadCSV] Firestore write failed:', err.message);
+    console.error('[uploadCSV] Error:', err.message);
     return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: 'Failed to save data. Please try again.' }) };
   }
 };

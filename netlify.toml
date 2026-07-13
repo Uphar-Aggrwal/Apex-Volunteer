@@ -3,10 +3,8 @@
   publish    = "dist"
 
 [functions]
-  # zisi correctly handles firebase-admin's native Node.js modules
-  # esbuild cannot bundle @google-cloud/* native deps used by firebase-admin
-  node_bundler = "zisi"
-  included_files = ["netlify/functions/**"]
+  # esbuild works perfectly now — no native C++ modules in use
+  node_bundler = "esbuild"
 
 # All /api/* calls are proxied to Netlify Serverless Functions
 [[redirects]]
