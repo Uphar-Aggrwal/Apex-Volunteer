@@ -62,15 +62,29 @@ export default [
   },
   {
     // Test files — relax some rules
-    files: ['src/**/*.test.{js,jsx}'],
+    files: ['src/**/*.test.{js,jsx}', 'netlify/**/__tests__/**/*.{js,cjs,mjs}'],
     languageOptions: {
-      globals: { ...globals.jest },
+      globals: { ...globals.jest, ...globals.node },
     },
     rules: {
       'no-console': 'off',
     },
   },
   {
-    ignores: ['dist/**', 'node_modules/**', 'coverage/**'],
+    // Node.js backend files
+    files: ['netlify/**/*.{js,cjs,mjs}', 'scripts/**/*.{js,cjs,mjs}'],
+    languageOptions: {
+      globals: { ...globals.node },
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'commonjs',
+      },
+    },
+    rules: {
+      'no-console': 'off',
+    },
+  },
+  {
+    ignores: ['dist/**', 'node_modules/**', 'coverage/**', 'netlify/functions/.eslintrc.json'],
   },
 ];

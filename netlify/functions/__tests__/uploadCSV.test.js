@@ -1,4 +1,4 @@
-jest.mock('firebase-admin', () => ({ apps: [], initializeApp: jest.fn(), credential: { cert: jest.fn() }, firestore: jest.fn() }));
+
 const { _validateRows } = require('../uploadCSV');
 
 describe('uploadCSV Netlify Function', () => {

@@ -30,7 +30,6 @@ const ZONE_NAMES = [
  * Different zones peak at different times (staggered by 2 minutes each).
  */
 function simulateOccupancy(zoneIndex, timeElapsedSeconds, totalDurationSeconds) {
-  const halfTime = totalDurationSeconds / 2;
   const phaseOffset = zoneIndex * 120; // 2 min stagger between zones
   const normalised = (timeElapsedSeconds + phaseOffset) / totalDurationSeconds;
 
